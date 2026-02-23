@@ -5,7 +5,7 @@ import numpy as np
 import pandas as pd
 from collections import Counter
 from itertools import combinations
-
+import json
 
 url = 'https://www.dominos.com/en?utm_campaign=52477568%7Cc%7CBG%7CBing_NB_Pizza_Generic&utm_source=Bing&utm_medium=p_search&utm_content=kwd-73598965867833:loc-190%7C52477568%7C4745841861&utm_term=pizza&matchtype=be&msclkid=b8a95eb35a0916d83d02372b9fadcae1'
 
@@ -62,10 +62,11 @@ def most_pairs(corpus):
     #return the most common pair
     return most_common_pair
 
-
+words = []
 def merge(corpus,pair):
     #create a new list of corpus
     new_corpus = []
+   
     #start the index at 0
     i=0
     #while loop across the entire list
@@ -76,25 +77,34 @@ def merge(corpus,pair):
 
 	    #where the pair is found, we replace the pair with a tightended version of it
             new_corpus.append(pair[0][0]+pair[0][1])
+            words.append(pair[0][0]+pair[0][1])
             #we run i +=2 since were pairing two elements
             i+=2
         else:
 	    #for all other cases, we just append the normal corpus
             new_corpus.append(corpus[i])
+            
             i+=1
-
+     
     corpus = new_corpus
-    return corpus
+   
+    return corpus , words
 
 
 
-target = 150
+target = 250
 vocab_size = 0
 while vocab_size < target:
     most = most_pairs(corpus)
-    print(most)
-    corpus = merge(corpus,most)
-    print(corpus)
+    #print(most)
+    corpus, words = merge(corpus,most)
+    
     vocab_size += 1
+unique_vocab = list(set(words))
 
-print(corpus)
+
+
+vocab_dict = {token: idx for idx, token in enumerate(unique_vocab)} 
+
+with open('vocab.json', 'w') as f:
+    json.dump(vocab_dict, f)
